@@ -1,0 +1,39 @@
+﻿@page
+@model BudgetPilot.Pages.Accounts.IndexModel
+@{
+    ViewData["Title"] = "My Wallets";
+}
+
+<h1 class="mb-4">My Wallets</h1>
+
+<div class="mb-3">
+    <strong>Total balance:</strong> @Model.TotalBalance
+    <a class="btn btn-primary float-end" asp-page="Create">+ New Wallet</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Balance</th>
+        <th>Currency</th>
+        <th>Type</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var a in Model.Accounts)
+    {
+        <tr>
+            <td>@a.Name</td>
+            <td>@a.Balance</td>
+            <td>@a.Currency</td>
+            <td>@a.Type</td>
+            <td>
+                <a asp-page="Edit" asp-route-id="@a.Id">Edit</a> |
+                <a asp-page="Delete" asp-route-id="@a.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

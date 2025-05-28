@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace BudgetPilot.Models
 {
@@ -28,14 +29,15 @@ namespace BudgetPilot.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
 
-        // Link to the user who owns this account
-        [Required]
+        // FK to the user who owns this account
         public string OwnerId { get; set; } = null!;
+        
+        [ValidateNever]
         [ForeignKey(nameof(OwnerId))]
-        public IdentityUser Owner { get; set; } = null!;
+        public IdentityUser? Owner { get; set; }
 
-        // Navigation
-        public ICollection<Transaction> Transactions { get; set; } 
+        // Navigation to transactions
+        public ICollection<Transaction> Transactions { get; set; }
             = new List<Transaction>();
     }
 }

@@ -1,0 +1,47 @@
+﻿@page
+@model BudgetPilot.Pages.Accounts.EditModel
+@{
+    ViewData["Title"] = "New Wallet";
+}
+
+<h1 class="mb-4">Edit Wallet</h1>
+
+<form method="post">
+    <input asp-for="Account.Id" type="hidden" />
+    <input asp-for="Account.OwnerId" type="hidden" />
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Account.Name" class="form-label">Name</label>
+        <input asp-for="Account.Name" class="form-control"/>
+        <span asp-validation-for="Account.Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Account.Balance" class="form-label">Starting Balance</label>
+        <input asp-for="Account.Balance" class="form-control"/>
+        <span asp-validation-for="Account.Balance" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Account.Currency" class="form-label">Currency</label>
+        <input asp-for="Account.Currency" class="form-control"/>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Account.Type" class="form-label">Type</label>
+        <input asp-for="Account.Type" class="form-control"/>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Account.Description" class="form-label">Description</label>
+        <textarea asp-for="Account.Description" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
