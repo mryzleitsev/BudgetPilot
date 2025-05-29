@@ -1,0 +1,40 @@
+﻿@page
+@model BudgetPilot.Pages.Transactions.CreateModel
+@{
+    ViewData["Title"] = "New Transaction";
+}
+
+<h1 class="mb-3">New Transaction</h1>
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    
+    <div class="mb-3">
+        <label asp-for="Transaction.Date" class="form-label">Date</label>
+        <input asp-for="Transaction.Date" class="form-control" type="date"/>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transaction.Amount" class="form-label">Amount</label>
+        <input asp-for="Transaction.Amount" class="form-control"/>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transaction.Category" class="form-label">Category</label>
+        <input asp-for="Transaction.Category" class="form-control"/>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transaction.Description" class="form-label">Description</label>
+        <textarea asp-for="Transaction.Description" class="form-control"></textarea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Account</label>
+        <select asp-for="Transaction.AccountId" asp-items="@(new SelectList(Model.Accounts, "Id", "Name"))"
+                class="form-select"></select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

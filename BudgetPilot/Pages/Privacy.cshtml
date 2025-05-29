@@ -1,8 +1,71 @@
 ﻿@page
-@model PrivacyModel
+@model BudgetPilot.Pages.PrivacyModel
 @{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<section class="py-5">
+  <div class="container">
+    <h1>Privacy Policy</h1>
+    <p>Last updated: May 29, 2025</p>
+
+    <h2>1. About This Project</h2>
+    <p>
+      <strong>BudgetPilot</strong> is a diploma web project by Miron Ryzleytsev, 
+      student of group 545a, Department of Computer Systems and Networks (CSN), 
+      at Kharkiv Aviation University. Its goal is to provide a simple, secure tool 
+      to manage personal finances: create multiple wallets (accounts), record transactions, 
+      and generate reports and visualizations.
+    </p>
+
+    <h2>2. Information We Collect</h2>
+    <ul>
+      <li><strong>Account Information:</strong> Your email and hashed password via ASP.NET Identity when you register.</li>
+      <li><strong>Financial Data:</strong> Details of your wallets and transactions (date, amount, category, description).</li>
+      <li><strong>Usage Data:</strong> Page visits and actions, for improving the application.</li>
+    </ul>
+
+    <h2>3. How We Use Your Data</h2>
+    <ul>
+      <li>Authenticate and authorize your access.</li>
+      <li>Perform CRUD operations on wallets and transactions.</li>
+      <li>Generate analytics and exportable reports.</li>
+      <li>Send important notifications (e.g. password reset links).</li>
+    </ul>
+
+    <h2>4. Cookies and Session</h2>
+    <p>
+      BudgetPilot uses only essential cookies for authentication (ASP.NET Core). 
+      No third-party tracking or analytical cookies are used.
+    </p>
+
+    <h2>5. Data Storage and Security</h2>
+    <p>
+      All communication is secured via SSL/TLS, and passwords are stored as hashes. 
+      While we follow industry best practices, no method of data transmission or storage 
+      is 100% secure.
+    </p>
+
+    <h2>6. Data Sharing</h2>
+    <p>
+      We do not sell, rent, or share your personal data with third parties, 
+      except as required by law.
+    </p>
+
+    <h2>7. Your Rights</h2>
+    <ul>
+      <li><strong>Access:</strong> You may view or export your data at any time.</li>
+      <li><strong>Correction:</strong> You may edit your wallets and transactions freely.</li>
+      <li><strong>Deletion:</strong> You may delete your account; all associated data will be permanently removed.</li>
+    </ul>
+
+    <h2>8. Contact & Institution</h2>
+    <p>
+      This diploma project is part of the curriculum at 
+      <a href="https://khai.edu/ua/" target="_blank">Kharkiv Aviation University</a>, 
+      Department of Computer Systems and Networks (CSN).  
+      For questions or feedback, please email  
+      <a href="mailto:m.r.ryzleytsev@student.csn.khai.edu">m.r.ryzleytsev@student.csn.khai.edu</a>.
+    </p>
+  </div>
+</section>

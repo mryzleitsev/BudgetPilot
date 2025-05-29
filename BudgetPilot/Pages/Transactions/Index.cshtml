@@ -1,0 +1,60 @@
+﻿@page "{accountId:int?}"
+@model BudgetPilot.Pages.Transactions.IndexModel
+@{
+    ViewData["Title"] = "Transactions";
+}
+
+<h1 class="mb-3">Transactions</h1>
+
+<form method="get" class="mb-4">
+    <label>Filter by account:</label>
+    <select name="accountId"
+            class="form-select w-auto d-inline-block"
+            onchange="this.form.submit()">
+        <option value="">All accounts</option>
+
+        @* Для опций делаем нормальный if, без вложенного C# в атрибутах *@
+        @foreach (var acct in Model.Accounts)
+        {
+            if (acct.Id == Model.SelectedAccountId)
+            {
+                <option value="@acct.Id" selected>@acct.Name</option>
+            }
+            else
+            {
+                <option value="@acct.Id">@acct.Name</option>
+            }
+        }
+    </select>
+
+    <a class="btn btn-primary float-end" asp-page="Create">+ New Transaction</a>
+</form>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Account</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var t in Model.Transactions)
+    {
+        <tr>
+            <td>@t.Date.ToString("yyyy-MM-dd")</td>
+            <td>@t.Amount</td>
+            <td>@t.Category</td>
+            <td>@t.Description</td>
+            <td>@t.Account.Name</td>
+            <td>
+                <a asp-page="Edit" asp-route-id="@t.Id">Edit</a> |
+                <a asp-page="Delete" asp-route-id="@t.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
