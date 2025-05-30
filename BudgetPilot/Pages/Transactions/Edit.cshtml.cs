@@ -18,6 +18,7 @@ namespace BudgetPilot.Pages.Transactions
 
         [BindProperty]
         public Transaction Transaction { get; set; } = default!;
+        public IList<Category> Categories { get; private set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -28,19 +29,24 @@ namespace BudgetPilot.Pages.Transactions
                               .Where(t => t.Account.OwnerId == userId)
                               .FirstOrDefaultAsync(t => t.Id == id)
                           ?? throw new InvalidOperationException("Transaction not found or access denied");
+            
+            Categories = await _db.Categories
+                .OrderBy(c => c.Name)
+                .ToListAsync();
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Скрытым полем передаём Id и AccountId из формы
             if (!ModelState.IsValid)
             {
+                Categories = await _db.Categories
+                    .OrderBy(c => c.Name)
+                    .ToListAsync();
                 return Page();
             }
-
-            // Отмечаем сущность как изменённую
+            
             _db.Attach(Transaction).State = EntityState.Modified;
             Transaction.UpdatedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();

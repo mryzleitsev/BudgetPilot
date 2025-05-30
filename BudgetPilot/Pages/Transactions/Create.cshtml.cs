@@ -21,12 +21,16 @@ namespace BudgetPilot.Pages.Transactions
         public Transaction Transaction { get; set; } = new();
 
         public IList<Account> Accounts { get; private set; } = default!;
+        public IList<Category>  Categories { get; private set; } = default!;
 
         public async Task OnGetAsync()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Accounts = await _db.Accounts
                 .Where(a => a.OwnerId == userId)
+                .ToListAsync();
+            Categories = await _db.Categories
+                .OrderBy(c => c.Name)
                 .ToListAsync();
             
             Transaction.Date = DateTime.Today;

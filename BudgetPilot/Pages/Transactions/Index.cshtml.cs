@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,24 +17,29 @@ namespace BudgetPilot.Pages.Transactions
         private readonly ApplicationDbContext _db;
         public IndexModel(ApplicationDbContext db) => _db = db;
 
-        public IList<Transaction> Transactions { get; private set; } = default!;
-        public IList<Account> Accounts             { get; private set; } = default!;
-        public int? SelectedAccountId              { get; set; }
+        // list of accs
+        public IList<Account> Accounts { get; private set; } = default!;
+
+        // chosen acc
+        public int? SelectedAccountId { get; set; }
+
+        // Grouping by date
+        public List<IGrouping<DateTime, Transaction>> GroupedTransactions { get; private set; }
+            = new List<IGrouping<DateTime, Transaction>>();
 
         public async Task OnGetAsync(int? accountId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // List of accounts for the current user
             Accounts = await _db.Accounts
                 .Where(a => a.OwnerId == userId)
                 .OrderBy(a => a.Name)
                 .AsNoTracking()
                 .ToListAsync();
 
-            // Basic request for transactions
             var q = _db.Transactions
                 .Include(t => t.Account)
+                .Include(t => t.Category)
                 .Where(t => t.Account.OwnerId == userId);
 
             if (accountId.HasValue)
@@ -42,10 +48,15 @@ namespace BudgetPilot.Pages.Transactions
                 SelectedAccountId = accountId;
             }
 
-            Transactions = await q
+            var all = await q
                 .OrderByDescending(t => t.Date)
                 .AsNoTracking()
                 .ToListAsync();
+
+            GroupedTransactions = all
+                .GroupBy(t => t.Date.Date)
+                .OrderByDescending(g => g.Key)
+                .ToList();
         }
     }
 }

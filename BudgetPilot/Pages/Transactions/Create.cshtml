@@ -18,8 +18,13 @@
         <input asp-for="Transaction.Amount" class="form-control"/>
     </div>
     <div class="mb-3">
-        <label asp-for="Transaction.Category" class="form-label">Category</label>
-        <input asp-for="Transaction.Category" class="form-control"/>
+        <label asp-for="Transaction.CategoryId" class="form-label">Category</label>
+        <select asp-for="Transaction.CategoryId"
+                asp-items="@(new SelectList(Model.Categories, "Id", "Name"))"
+                class="form-select">
+            <option value="">— select —</option>
+        </select>
+        <span asp-validation-for="Transaction.CategoryId" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="Transaction.Description" class="form-label">Description</label>

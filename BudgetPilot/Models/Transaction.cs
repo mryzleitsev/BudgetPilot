@@ -13,7 +13,11 @@ namespace BudgetPilot.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Amount { get; set; }                  // Fixed precision
 
-        public string Category { get; set; } = null!;        // e.g. "Food", "Salary"
+        
+        public int    CategoryId { get; set; }
+        [ValidateNever]     
+        public Category? Category { get; set; }
+
         public string Description { get; set; } = null!;     // Note
 
         // Link to Account

@@ -117,3 +117,12 @@ a.nav-link,
 button.nav-link {
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
 }
+
+.form-control:focus,
+.form-select:focus,
+.btn:focus,
+.btn:active:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #ced4da !important; /* default gray bootstrap border */
+}
