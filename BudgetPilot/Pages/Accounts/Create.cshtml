@@ -23,17 +23,24 @@
 
     <div class="mb-3">
         <label asp-for="Account.Currency" class="form-label">Currency</label>
-        <input asp-for="Account.Currency" class="form-control"/>
+        <select asp-for="Account.Currency"
+                asp-items="Model.CurrencyOptions"
+                class="form-select">
+            <option value="">— Select currency —</option>
+        </select>
+        <span asp-validation-for="Account.Currency" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="Account.Type" class="form-label">Type</label>
         <input asp-for="Account.Type" class="form-control"/>
+        <span asp-validation-for="Account.Type" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="Account.Description" class="form-label">Description</label>
         <textarea asp-for="Account.Description" class="form-control"></textarea>
+        <span asp-validation-for="Account.Description" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Create</button>
