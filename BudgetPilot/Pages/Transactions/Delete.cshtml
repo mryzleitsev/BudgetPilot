@@ -9,19 +9,19 @@
 
 <dl class="row">
     <dt class="col-sm-2">Date</dt>
-    <dd class="col-sm-10">@Model.Transaction.Date:yyyy-MM-dd</dd>
+    <dd class="col-sm-10">@Model.Transaction.Date.ToString("yyyy-MM-dd")</dd>
 
     <dt class="col-sm-2">Amount</dt>
     <dd class="col-sm-10">@Model.Transaction.Amount</dd>
 
     <dt class="col-sm-2">Category</dt>
-    <dd class="col-sm-10">@Model.Transaction.Category</dd>
+    <dd class="col-sm-10">@Model.Transaction.Category?.Name</dd>
 
     <dt class="col-sm-2">Description</dt>
     <dd class="col-sm-10">@Model.Transaction.Description</dd>
 
     <dt class="col-sm-2">Account</dt>
-    <dd class="col-sm-10">@Model.Transaction.Account.Name</dd>
+    <dd class="col-sm-10">@Model.Transaction.Account?.Name</dd>
 </dl>
 
 <form method="post" asp-route-id="@Model.Transaction.Id">

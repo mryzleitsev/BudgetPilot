@@ -10,16 +10,17 @@
     <input asp-for="Account.Id" type="hidden" />
     <input asp-for="Account.OwnerId" type="hidden" />
 
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
     <div class="mb-3">
         <label asp-for="Account.Name" class="form-label">Name</label>
-        <input asp-for="Account.Name" class="form-control"/>
+        <input asp-for="Account.Name" class="form-control" />
         <span asp-validation-for="Account.Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Account.Balance" class="form-label">Starting Balance</label>
-        <input asp-for="Account.Balance" class="form-control"/>
+        <label asp-for="Account.Balance" class="form-label">Balance</label>
+        <input asp-for="Account.Balance" class="form-control" />
         <span asp-validation-for="Account.Balance" class="text-danger"></span>
     </div>
 
@@ -35,7 +36,7 @@
 
     <div class="mb-3">
         <label asp-for="Account.Type" class="form-label">Type</label>
-        <input asp-for="Account.Type" class="form-control"/>
+        <input asp-for="Account.Type" class="form-control" />
         <span asp-validation-for="Account.Type" class="text-danger"></span>
     </div>
 
@@ -45,8 +46,17 @@
         <span asp-validation-for="Account.Description" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+<hr class="my-4" />
+
+<form method="post" asp-page="Delete" asp-route-id="@Model.Account.Id"
+      onsubmit="return confirm('Are you sure you want to delete this wallet?');">
+    <button type="submit" class="btn btn-danger">Delete Wallet</button>
 </form>
 
 @section Scripts {

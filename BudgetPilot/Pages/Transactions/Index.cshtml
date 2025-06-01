@@ -24,45 +24,43 @@
             }
         }
     </select>
+
     <a class="btn btn-primary float-end" asp-page="Create">+ New Transaction</a>
 </form>
 
-@foreach (var dayGroup in Model.GroupedTransactions)
-{
-    <div class="mb-5">
-        <h5 class="mb-3">
-            @{
-                var dt = dayGroup.Key;
-                if (dt == DateTime.Today) { <text>Today</text>; }
-                else if (dt == DateTime.Today.AddDays(-1)) { <text>Yesterday</text>; }
-                else { <text>@dt.ToString("MMMM dd, yyyy")</text>; }
-            }
-        </h5>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Amount</th>
-                    <th>Category</th>
-                    <th>Description</th>
-                    <th>Account</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach (var t in dayGroup)
-            {
-                <tr>
-                    <td>@t.Amount.ToString("F2")</td>
-                    <td>@t.Category?.Name</td>
-                    <td>@t.Description</td>
-                    <td>@t.Account.Name</td>
-                    <td>
-                        <a asp-page="Edit" asp-route-id="@t.Id">Edit</a> |
-                        <a asp-page="Delete" asp-route-id="@t.Id">Delete</a>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
-    </div>
-}
+<table class="table">
+    <thead>
+        <tr class="table-light">
+            <th style="width: 15%;">Date</th>
+            <th style="width: 15%;">Amount</th>
+            <th style="width: 20%;">Category</th>
+            <th>Description</th>
+            <th style="width: 15%;">Account</th>
+            <th style="width: 10%;"></th>
+        </tr>
+    </thead>
+    <tbody>
+    @* Группируем транзакции по дате *@
+    @foreach (var group in Model.Transactions.GroupBy(t => t.Date.Date))
+    {
+        <tr class="table-secondary">
+            <td colspan="6">
+                <strong>@group.Key.ToString("yyyy-MM-dd (dddd)")</strong>
+            </td>
+        </tr>
+
+        @foreach (var t in group)
+        {
+            <tr style="cursor: pointer;"
+                onclick="location.href='@Url.Page("Edit", new { id = t.Id })'">
+                <td>@t.Date.ToString("yyyy-MM-dd")</td>
+                <td>@string.Format("{0:N2}", t.Amount)</td>
+                <td>@t.Category?.Name</td>
+                <td>@t.Description</td>
+                <td>@t.Account?.Name</td>
+                <td></td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>

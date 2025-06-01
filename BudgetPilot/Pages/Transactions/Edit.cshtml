@@ -8,25 +8,32 @@
 
 <form method="post">
     <div asp-validation-summary="All" class="text-danger"></div>
-    <input asp-for="Transaction.Id" type="hidden"/>
-    <input asp-for="Transaction.AccountId" type="hidden"/>
+
+    <input asp-for="Transaction.Id" type="hidden" />
 
     <div class="mb-3">
         <label asp-for="Transaction.Date" class="form-label">Date</label>
-        <input asp-for="Transaction.Date" class="form-control" type="date"/>
+        <input asp-for="Transaction.Date" class="form-control" type="date" />
         <span asp-validation-for="Transaction.Date" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="Transaction.Amount" class="form-label">Amount</label>
-        <input asp-for="Transaction.Amount" class="form-control"/>
+        <input asp-for="Transaction.Amount" class="form-control" />
         <span asp-validation-for="Transaction.Amount" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsIncome" class="form-check-input" type="checkbox" />
+        <label asp-for="IsIncome" class="form-check-label">
+            Income (если не отмечено – расход)
+        </label>
     </div>
 
     <div class="mb-3">
         <label asp-for="Transaction.CategoryId" class="form-label">Category</label>
         <select asp-for="Transaction.CategoryId"
-                asp-items="@(new SelectList(Model.Categories, "Id","Name"))"
+                asp-items="@(new SelectList(Model.Categories, "Id", "Name"))"
                 class="form-select">
             <option value="">— select —</option>
         </select>
@@ -39,8 +46,24 @@
         <span asp-validation-for="Transaction.Description" class="text-danger"></span>
     </div>
 
+    <div class="mb-3">
+        <label asp-for="Transaction.AccountId" class="form-label">Account</label>
+        <select asp-for="Transaction.AccountId"
+                asp-items="@(new SelectList(Model.Accounts, "Id", "Name"))"
+                class="form-select">
+            <option value="">— select —</option>
+        </select>
+        <span asp-validation-for="Transaction.AccountId" class="text-danger"></span>
+    </div>
+
     <button type="submit" class="btn btn-primary">Save</button>
     <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+    <button formaction="@Url.Page("Delete", new { id = Model.Transaction.Id })"
+            formmethod="post"
+            class="btn btn-danger ms-2"
+            onclick="return confirm('Are you sure you want to delete this transaction?');">
+        Delete
+    </button>
 </form>
 
 @section Scripts {

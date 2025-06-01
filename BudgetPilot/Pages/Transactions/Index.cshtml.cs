@@ -17,26 +17,29 @@ namespace BudgetPilot.Pages.Transactions
         private readonly ApplicationDbContext _db;
         public IndexModel(ApplicationDbContext db) => _db = db;
 
-        // list of accs
-        public IList<Account> Accounts { get; private set; } = default!;
-
-        // chosen acc
-        public int? SelectedAccountId { get; set; }
-
-        // Grouping by date
-        public List<IGrouping<DateTime, Transaction>> GroupedTransactions { get; private set; }
-            = new List<IGrouping<DateTime, Transaction>>();
+        public IList<Transaction> Transactions { get; private set; } = default!;
+        public IList<Account>     Accounts     { get; private set; } = default!;
+        public IList<Category>    Categories   { get; private set; } = default!;
+        public int? SelectedAccountId            { get; set; }
 
         public async Task OnGetAsync(int? accountId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            // Подгружаем кошельки текущего пользователя
             Accounts = await _db.Accounts
                 .Where(a => a.OwnerId == userId)
                 .OrderBy(a => a.Name)
                 .AsNoTracking()
                 .ToListAsync();
 
+            // Подгружаем категории (для отображения имени категории)
+            Categories = await _db.Categories
+                .OrderBy(c => c.Name)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Базовый запрос: все транзакции текущего пользователя
             var q = _db.Transactions
                 .Include(t => t.Account)
                 .Include(t => t.Category)
@@ -48,15 +51,11 @@ namespace BudgetPilot.Pages.Transactions
                 SelectedAccountId = accountId;
             }
 
-            var all = await q
+            // Сразу упорядочим по дате desc
+            Transactions = await q
                 .OrderByDescending(t => t.Date)
                 .AsNoTracking()
                 .ToListAsync();
-
-            GroupedTransactions = all
-                .GroupBy(t => t.Date.Date)
-                .OrderByDescending(g => g.Key)
-                .ToList();
         }
     }
 }

@@ -25,8 +25,11 @@ namespace BudgetPilot.Pages.Transactions
 
             Transaction = await _db.Transactions
                               .Include(t => t.Account)
-                              .Where(t => t.Account.OwnerId == userId)
-                              .FirstOrDefaultAsync(t => t.Id == id)
+                              .Include(t => t.Category)
+                              .FirstOrDefaultAsync(t =>
+                                  t.Id == id &&
+                                  t.Account.OwnerId == userId
+                              )
                           ?? throw new InvalidOperationException("Transaction not found or access denied");
 
             return Page();
@@ -34,12 +37,28 @@ namespace BudgetPilot.Pages.Transactions
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var trx = await _db.Transactions.FindAsync(id);
-            if (trx != null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Подгружаем саму транзакцию вместе с её Account
+            var toDelete = await _db.Transactions
+                .Include(t => t.Account)
+                .FirstOrDefaultAsync(t =>
+                    t.Id == id &&
+                    t.Account.OwnerId == userId
+                );
+
+            if (toDelete == null)
             {
-                _db.Transactions.Remove(trx);
-                await _db.SaveChangesAsync();
+                return NotFound();
             }
+
+            // «Откатываем» изменение баланса:
+            toDelete.Account!.Balance -= toDelete.Amount;
+
+            // Удаляем транзакцию
+            _db.Transactions.Remove(toDelete);
+            await _db.SaveChangesAsync();
+
             return RedirectToPage("Index");
         }
     }
