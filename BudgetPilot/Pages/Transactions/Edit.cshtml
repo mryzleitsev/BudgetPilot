@@ -58,12 +58,11 @@
 
     <button type="submit" class="btn btn-primary">Save</button>
     <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
-    <button formaction="@Url.Page("Delete", new { id = Model.Transaction.Id })"
-            formmethod="post"
-            class="btn btn-danger ms-2"
-            onclick="return confirm('Are you sure you want to delete this transaction?');">
+    <a asp-page="Delete"
+       asp-route-id="@Model.Transaction.Id"
+       class="btn btn-danger ms-2">
         Delete
-    </button>
+    </a>
 </form>
 
 @section Scripts {

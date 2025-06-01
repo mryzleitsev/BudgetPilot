@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using BudgetPilot.Data;
 using BudgetPilot.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +20,7 @@ namespace BudgetPilot.Pages.Accounts
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Account = await _db.Accounts.FindAsync(id)
-                      ?? throw new InvalidOperationException("Account not found");
+                      ?? throw new InvalidOperationException("Wallet not found");
             return Page();
         }
 
