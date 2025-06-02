@@ -23,14 +23,12 @@ namespace BudgetPilot.Pages.Accounts
         public Account Account { get; set; } = new();
 
         /// <summary>
-        /// Список валют (ISO-код + символ) для выпадающего списка
+        /// List of currnecies (ISO-code + symbol) for list
         /// </summary>
         public List<SelectListItem> CurrencyOptions { get; private set; } = new();
 
         public void OnGet()
         {
-            // Проставляем дефолтную дату и OwnerId потом, перед сохранением
-            // Но подгружаем список валют сюда
             CurrencyOptions = _allCurrencies
                 .Select(c => new SelectListItem 
                 { 
@@ -42,7 +40,6 @@ namespace BudgetPilot.Pages.Accounts
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Подгружаем список снова, чтобы форма могла его отобразить, если ModelState невалиден
             CurrencyOptions = _allCurrencies
                 .Select(c => new SelectListItem 
                 { 
@@ -51,11 +48,9 @@ namespace BudgetPilot.Pages.Accounts
                 })
                 .ToList();
 
-            // Проставляем owner и время вручную
             Account.OwnerId   = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Account.CreatedAt = DateTime.UtcNow;
 
-            // Убираем OwnerId из валидации, так как оно не вводится в форме
             ModelState.Remove(nameof(Account.OwnerId));
             ModelState.Remove($"Account.{nameof(Account.OwnerId)}");
 
@@ -70,7 +65,7 @@ namespace BudgetPilot.Pages.Accounts
         }
 
         /// <summary>
-        /// Жёстко закодированный набор ISO-код + символ.
+        /// Currency ISO-code + sumbol.
         /// </summary>
         private static readonly (string Code, string Symbol)[] _allCurrencies = new[]
         {

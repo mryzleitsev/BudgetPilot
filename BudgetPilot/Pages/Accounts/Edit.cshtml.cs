@@ -23,7 +23,7 @@ namespace BudgetPilot.Pages.Accounts
         public Account Account { get; set; } = default!;
 
         /// <summary>
-        /// Список валют (ISO-код + символ) для select
+        /// List of currnecies (ISO-code + symbol) for select
         /// </summary>
         public List<SelectListItem> CurrencyOptions { get; private set; } = new();
 

@@ -1,0 +1,273 @@
+﻿@page
+@model BudgetPilot.Pages.Statistics.IndexModel
+@using System.Text.Json
+@{
+ViewData["Title"] = "Statistics Dashboard";
+}
+
+<h1 class="mb-4">Statistics Dashboard</h1>
+
+<hr />
+
+<!-- 1) Current Balances per Account -->
+<h3>Current Balances per Account</h3>
+<table class="table table-bordered mb-5">
+    <thead class="table-light text-black">
+    <tr>
+        <th>Account</th>
+        <th>Balance</th>
+        <th>Currency</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var ab in Model.AccountBalances)
+    {
+    <tr>
+        <td>@ab.AccountName</td>
+        <td>@ab.Balance.ToString("N2")</td>
+        <td>@ab.Currency</td>
+    </tr>
+    }
+    </tbody>
+</table>
+
+<hr />
+
+<!-- 2) Transactions by Month (last 12 months) -->
+<h3>Monthly Transactions (Income / Expense)</h3>
+<div class="mb-5">
+    <canvas id="chartMonthByWallet" height="200"></canvas>
+</div>
+
+<hr />
+
+<!-- 3) Doughnut: Current Month Transaction Volume per Account -->
+<h3>This Month’s Transaction Volume per Account</h3>
+<div class="row mb-5">
+    <div class="col-md-6">
+        <canvas id="doughnutThisMonth" height="200"></canvas>
+    </div>
+</div>
+
+<hr />
+
+<!-- 4) Doughnut: Sum of Balances by Currency -->
+<h3>Sum of Balances by Currency</h3>
+<div class="row mb-5">
+    <div class="col-md-6">
+        <canvas id="doughnutByCurrency" height="200"></canvas>
+    </div>
+</div>
+
+<hr />
+
+<!-- 5) Recurring Transactions Summary -->
+<h3>Recurring Transactions Overview</h3>
+<table class="table table-bordered mb-5">
+    <thead class="table-light text-black">
+    <tr>
+        <th>Account</th>
+        <th>Currency</th>
+        <th>This Month Total</th>
+        <th>Next Month Total</th>
+        <th>Total Planned (All Future)</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var rs in Model.RecurringStats)
+    {
+    <tr>
+        <td>@rs.AccountName</td>
+        <td>@rs.Currency</td>
+        <td>@rs.ThisMonthSum.ToString("N2")</td>
+        <td>@rs.NextMonthSum.ToString("N2")</td>
+        <td>@rs.TotalPlannedInPeriod.ToString("N2")</td>
+    </tr>
+    }
+    </tbody>
+</table>
+
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    (function() {
+        const rawMonthly = @Html.Raw(
+        JsonSerializer.Serialize(
+        Model.MonthlyStats,
+        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+        )
+        );
+
+        const monthsSet = new Set();
+        rawMonthly.forEach(item => {
+            const ym = item.year + "-" + (item.month < 10 ? ("0" + item.month) : item.month);
+            monthsSet.add(ym);
+        });
+        const monthsArray = Array.from(monthsSet).sort();
+
+        const wallets = [];
+        rawMonthly.forEach(item => {
+            const key = item.accountName + " (" + item.currency + ")";
+            if (!wallets.includes(key)) wallets.push(key);
+        });
+
+        const datasetsBar = [];
+        wallets.forEach(wname => {
+            // Income
+            const incomeData = monthsArray.map(m => {
+                const [y, mo] = m.split("-");
+                const rec = rawMonthly.find(i =>
+                    (i.accountName + " (" + i.currency + ")") === wname
+                    && i.year === parseInt(y) && i.month === parseInt(mo)
+                );
+                return rec ? rec.incomeSum : 0;
+            });
+            datasetsBar.push({
+                label: wname + " (Income)",
+                data: incomeData,
+                backgroundColor: getRandomColor(),
+                borderWidth: 1
+            });
+
+            // Expense 
+            const expenseData = monthsArray.map(m => {
+                const [y, mo] = m.split("-");
+                const rec = rawMonthly.find(i =>
+                    (i.accountName + " (" + i.currency + ")") === wname
+                    && i.year === parseInt(y) && i.month === parseInt(mo)
+                );
+                return rec ? Math.abs(rec.expenseSum) : 0;
+            });
+            datasetsBar.push({
+                label: wname + " (Expense)",
+                data: expenseData,
+                backgroundColor: getRandomColor(),
+                borderWidth: 1
+            });
+        });
+
+        const ctxBar = document.getElementById('chartMonthByWallet').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: monthsArray,
+                datasets: datasetsBar
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Amount'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+
+        const rawCurrentMonth = @Html.Raw(
+        JsonSerializer.Serialize(
+        Model.CurrentMonthTxPerAccount,
+        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+        )
+        );
+
+        // Собираем метки (accountName) и data (TotalVolume)
+        const labelsDoughnut1 = rawCurrentMonth.map(i => i.accountName);
+        const dataDoughnut1   = rawCurrentMonth.map(i => i.totalVolume);
+
+        const ctxD1 = document.getElementById('doughnutThisMonth').getContext('2d');
+        new Chart(ctxD1, {
+            type: 'doughnut',
+            data: {
+                labels: labelsDoughnut1,
+                datasets: [{
+                    data: dataDoughnut1,
+                    backgroundColor: labelsDoughnut1.map(_ => getRandomColor())
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const val   = context.parsed;
+                                return label + ': ' + val.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
+        const rawByCurrency = @Html.Raw(
+        JsonSerializer.Serialize(
+        Model.SumByCurrency,
+        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+        )
+        );
+
+        // currency and data (TotalBalance)
+        const labelsDoughnut2 = rawByCurrency.map(i => i.currency);
+        const dataDoughnut2   = rawByCurrency.map(i => i.totalBalance);
+
+        const ctxD2 = document.getElementById('doughnutByCurrency').getContext('2d');
+        new Chart(ctxD2, {
+            type: 'doughnut',
+            data: {
+                labels: labelsDoughnut2,
+                datasets: [{
+                    data: dataDoughnut2,
+                    backgroundColor: labelsDoughnut2.map(_ => getRandomColor())
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const val   = context.parsed;
+                                return label + ': ' + val.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 200);
+            const g = Math.floor(Math.random() * 200);
+            const b = Math.floor(Math.random() * 200);
+            return `rgba(${r},${g},${b},0.6)`;
+        }
+    })();
+</script>
+}

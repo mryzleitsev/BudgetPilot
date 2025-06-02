@@ -22,7 +22,7 @@ namespace BudgetPilot.Pages.Transactions
         [BindProperty]
         public Transaction Transaction { get; set; } = new();
 
-        // Новое булево свойство: если true — это доход; если false — расход
+        // New boolean property: if true - income; if false - expense
         [BindProperty]
         public bool IsIncome { get; set; } = false;
 
@@ -32,37 +32,31 @@ namespace BudgetPilot.Pages.Transactions
         public async Task OnGetAsync()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // Подгружаем кошельки пользователя
+            
             Accounts = await _db.Accounts
                 .Where(a => a.OwnerId == userId)
                 .OrderBy(a => a.Name)
                 .ToListAsync();
-
-            // Подгружаем все категории
+            
             Categories = await _db.Categories
                 .OrderBy(c => c.Name)
                 .ToListAsync();
-
-            // По умолчанию — сегодня
+            
             Transaction.Date = DateTime.Today;
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // Если форма не прошла валидацию — заново подгружаем выпадающие списки
+            
             if (!ModelState.IsValid)
             {
                 await OnGetAsync();
                 return Page();
             }
-
-            // Устанавливаем время создания
+            
             Transaction.CreatedAt = DateTime.UtcNow;
-
-            // 1) Преобразуем сумму в положительную или отрицательную
+            
             if (IsIncome)
             {
                 Transaction.Amount = Math.Abs(Transaction.Amount);
@@ -72,7 +66,6 @@ namespace BudgetPilot.Pages.Transactions
                 Transaction.Amount = -Math.Abs(Transaction.Amount);
             }
 
-            // 2) Найдём выбранный кошелёк и проверим права
             var account = await _db.Accounts.FindAsync(Transaction.AccountId);
             if (account == null || account.OwnerId != userId)
             {
@@ -81,10 +74,8 @@ namespace BudgetPilot.Pages.Transactions
                 return Page();
             }
 
-            // 3) Обновляем баланс: прибавляем/вычитаем сумму вообще, т.к. Transaction.Amount уже содержит знак
             account.Balance += Transaction.Amount;
 
-            // 4) Сохраняем транзакцию
             _db.Transactions.Add(Transaction);
             await _db.SaveChangesAsync();
 

@@ -26,20 +26,17 @@ namespace BudgetPilot.Pages.Transactions
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Подгружаем кошельки текущего пользователя
             Accounts = await _db.Accounts
                 .Where(a => a.OwnerId == userId)
                 .OrderBy(a => a.Name)
                 .AsNoTracking()
                 .ToListAsync();
 
-            // Подгружаем категории (для отображения имени категории)
             Categories = await _db.Categories
                 .OrderBy(c => c.Name)
                 .AsNoTracking()
                 .ToListAsync();
 
-            // Базовый запрос: все транзакции текущего пользователя
             var q = _db.Transactions
                 .Include(t => t.Account)
                 .Include(t => t.Category)
@@ -51,7 +48,6 @@ namespace BudgetPilot.Pages.Transactions
                 SelectedAccountId = accountId;
             }
 
-            // Сразу упорядочим по дате desc
             Transactions = await q
                 .OrderByDescending(t => t.Date)
                 .AsNoTracking()

@@ -21,7 +21,6 @@ namespace BudgetPilot.Pages.RecurringTransactions
         [BindProperty]
         public RecurringTransaction Recurring { get; set; } = new();
 
-        // Булево поле «доход/расход»
         [BindProperty]
         public bool IsIncome { get; set; } = false;
 
@@ -32,18 +31,15 @@ namespace BudgetPilot.Pages.RecurringTransactions
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Подгружаем кошельки текущего пользователя
             Accounts = await _db.Accounts
                 .Where(a => a.OwnerId == userId)
                 .OrderBy(a => a.Name)
                 .ToListAsync();
 
-            // Подгружаем категории
             Categories = await _db.Categories
                 .OrderBy(c => c.Name)
                 .ToListAsync();
 
-            // «По умолчанию» — сегодняшняя дата и активность = true
             Recurring.NextRunDate = DateTime.Today;
             Recurring.IsActive    = true;
         }
@@ -52,23 +48,19 @@ namespace BudgetPilot.Pages.RecurringTransactions
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Если валидация не прошла
             if (!ModelState.IsValid)
             {
                 await OnGetAsync();
                 return Page();
             }
 
-            // Ставим CreatedAt
             Recurring.CreatedAt = DateTime.UtcNow;
 
-            // 1) Выставляем знак суммы
             if (IsIncome)
                 Recurring.Amount = Math.Abs(Recurring.Amount);
             else
                 Recurring.Amount = -Math.Abs(Recurring.Amount);
 
-            // 2) Проверяем аккаунт
             var account = await _db.Accounts.FindAsync(Recurring.AccountId);
             if (account == null || account.OwnerId != userId)
             {
@@ -77,7 +69,6 @@ namespace BudgetPilot.Pages.RecurringTransactions
                 return Page();
             }
 
-            // 3) Сохраняем запись (баланс аккаунта при этом не меняем)
             _db.RecurringTransactions.Add(Recurring);
             await _db.SaveChangesAsync();
 

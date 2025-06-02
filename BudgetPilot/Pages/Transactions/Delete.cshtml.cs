@@ -39,7 +39,6 @@ namespace BudgetPilot.Pages.Transactions
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Подгружаем саму транзакцию вместе с её Account
             var toDelete = await _db.Transactions
                 .Include(t => t.Account)
                 .FirstOrDefaultAsync(t =>
@@ -52,10 +51,8 @@ namespace BudgetPilot.Pages.Transactions
                 return NotFound();
             }
 
-            // «Откатываем» изменение баланса:
             toDelete.Account!.Balance -= toDelete.Amount;
 
-            // Удаляем транзакцию
             _db.Transactions.Remove(toDelete);
             await _db.SaveChangesAsync();
 

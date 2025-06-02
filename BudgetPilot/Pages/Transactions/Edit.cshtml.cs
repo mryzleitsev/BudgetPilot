@@ -22,7 +22,6 @@ namespace BudgetPilot.Pages.Transactions
         [BindProperty]
         public Transaction Transaction { get; set; } = default!;
 
-        // Добавляем булевое свойство для переключателя доход/расход в форме
         [BindProperty]
         public bool IsIncome { get; set; } = false;
 
@@ -33,7 +32,6 @@ namespace BudgetPilot.Pages.Transactions
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Подгружаем транзакцию с Account, чтобы узнать старый счёт и старую сумму
             Transaction = await _db.Transactions
                               .Include(t => t.Account)
                               .FirstOrDefaultAsync(t =>
@@ -42,10 +40,8 @@ namespace BudgetPilot.Pages.Transactions
                               )
                           ?? throw new InvalidOperationException("Transaction not found or access denied");
 
-            // Установим флажок по значению суммы
             IsIncome = Transaction.Amount >= 0;
 
-            // Подгрузка списков для выпадающих
             Accounts = await _db.Accounts
                 .Where(a => a.OwnerId == userId)
                 .OrderBy(a => a.Name)
@@ -61,7 +57,6 @@ namespace BudgetPilot.Pages.Transactions
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Подгружаем списки заново, если валидация не прошла
             Accounts = await _db.Accounts
                 .Where(a => a.OwnerId == userId)
                 .OrderBy(a => a.Name)
@@ -75,7 +70,6 @@ namespace BudgetPilot.Pages.Transactions
                 return Page();
             }
 
-            // 1) Подгружаем «старую» транзакцию, включая её Account:
             var existing = await _db.Transactions
                 .Include(t => t.Account)
                 .FirstOrDefaultAsync(t =>
@@ -88,16 +82,13 @@ namespace BudgetPilot.Pages.Transactions
                 return NotFound();
             }
 
-            // 2) Откатываем старое изменение баланса:
             existing.Account!.Balance -= existing.Amount;
 
-            // 3) Обновляем саму транзакцию:
             existing.Date        = Transaction.Date;
-            existing.Amount      = Transaction.Amount; // пока без учёта IsIncome
+            existing.Amount      = Transaction.Amount; 
             existing.CategoryId  = Transaction.CategoryId;
             existing.Description = Transaction.Description;
 
-            // 4) Устанавливаем знак для новой суммы:
             if (IsIncome)
             {
                 existing.Amount = Math.Abs(existing.Amount);
@@ -107,7 +98,6 @@ namespace BudgetPilot.Pages.Transactions
                 existing.Amount = -Math.Abs(existing.Amount);
             }
 
-            // 5) Если пользователь сменил кошелёк:
             if (existing.AccountId != Transaction.AccountId)
             {
                 var newAccount = await _db.Accounts.FindAsync(Transaction.AccountId);
@@ -121,7 +111,6 @@ namespace BudgetPilot.Pages.Transactions
                 existing.Account   = newAccount!;
             }
 
-            // 6) Применяем баланс (с уже обновлённым existing.Amount):
             existing.Account!.Balance += existing.Amount;
 
             existing.UpdatedAt = DateTime.UtcNow;

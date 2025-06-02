@@ -22,7 +22,6 @@ namespace BudgetPilot.Pages.RecurringTransactions
         [BindProperty]
         public RecurringTransaction Recurring { get; set; } = default!;
 
-        // Если true — доход, иначе — расход
         [BindProperty]
         public bool IsIncome { get; set; } = false;
 
@@ -33,7 +32,6 @@ namespace BudgetPilot.Pages.RecurringTransactions
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // 1) Подгружаем «плановую» транзакцию вместе с Объектами Account и Category
             Recurring = await _db.RecurringTransactions
                 .Include(r => r.Account)
                 .Include(r => r.Category)
@@ -43,10 +41,8 @@ namespace BudgetPilot.Pages.RecurringTransactions
                 )
                 ?? throw new InvalidOperationException("Recurring transaction not found or access denied");
 
-            // 2) Устанавливаем флажок «доход/расход» по знаку суммы
             IsIncome = Recurring.Amount >= 0;
 
-            // 3) Подгружаем списки для dropdown-ов
             Accounts = await _db.Accounts
                 .Where(a => a.OwnerId == userId)
                 .OrderBy(a => a.Name)
@@ -63,7 +59,6 @@ namespace BudgetPilot.Pages.RecurringTransactions
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Если валидация не прошла — заново подгружаем списки и возвращаемся
             if (!ModelState.IsValid)
             {
                 Accounts = await _db.Accounts
@@ -78,7 +73,6 @@ namespace BudgetPilot.Pages.RecurringTransactions
                 return Page();
             }
 
-            // 1) Подгружаем «старую» сущность из БД вместе с её Account
             var existing = await _db.RecurringTransactions
                 .Include(r => r.Account)
                 .FirstOrDefaultAsync(r =>
@@ -89,21 +83,17 @@ namespace BudgetPilot.Pages.RecurringTransactions
             if (existing == null)
                 return NotFound();
 
-            // 2) Обновляем поля
             existing.NextRunDate = Recurring.NextRunDate;
             existing.Frequency   = Recurring.Frequency;
             existing.Description = Recurring.Description;
 
-            // 3) Устанавливаем знак суммы
             if (IsIncome)
                 existing.Amount = Math.Abs(Recurring.Amount);
             else
                 existing.Amount = -Math.Abs(Recurring.Amount);
 
-            // 4) Обновляем категорию
             existing.CategoryId = Recurring.CategoryId;
 
-            // 5) Если пользователь сменил кошелёк
             if (existing.AccountId != Recurring.AccountId)
             {
                 var newAccount = await _db.Accounts.FindAsync(Recurring.AccountId);
@@ -111,7 +101,6 @@ namespace BudgetPilot.Pages.RecurringTransactions
                 {
                     ModelState.AddModelError(string.Empty, "Selected account not found or access denied.");
 
-                    // Перезагрузим списки и вернёмся
                     Accounts = await _db.Accounts
                         .Where(a => a.OwnerId == userId)
                         .OrderBy(a => a.Name)
@@ -128,7 +117,6 @@ namespace BudgetPilot.Pages.RecurringTransactions
                 existing.Account   = newAccount;
             }
 
-            // 6) Активность
             existing.IsActive = Recurring.IsActive;
 
             await _db.SaveChangesAsync();
