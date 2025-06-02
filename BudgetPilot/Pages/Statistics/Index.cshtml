@@ -6,10 +6,8 @@ ViewData["Title"] = "Statistics Dashboard";
 }
 
 <h1 class="mb-4">Statistics Dashboard</h1>
-
 <hr />
 
-<!-- 1) Current Balances per Account -->
 <h3>Current Balances per Account</h3>
 <table class="table table-bordered mb-5">
     <thead class="table-light text-black">
@@ -33,7 +31,6 @@ ViewData["Title"] = "Statistics Dashboard";
 
 <hr />
 
-<!-- 2) Transactions by Month (last 12 months) -->
 <h3>Monthly Transactions (Income / Expense)</h3>
 <div class="mb-5">
     <canvas id="chartMonthByWallet" height="200"></canvas>
@@ -41,27 +38,24 @@ ViewData["Title"] = "Statistics Dashboard";
 
 <hr />
 
-<!-- 3) Doughnut: Current Month Transaction Volume per Account -->
 <h3>This Month’s Transaction Volume per Account</h3>
-<div class="row mb-5">
+<div class="row justify-content-center mb-5">
     <div class="col-md-6">
-        <canvas id="doughnutThisMonth" height="200"></canvas>
+        <canvas id="doughnutThisMonth" height="200" class="d-block mx-auto"></canvas>
     </div>
 </div>
 
 <hr />
 
-<!-- 4) Doughnut: Sum of Balances by Currency -->
 <h3>Sum of Balances by Currency</h3>
-<div class="row mb-5">
+<div class="row justify-content-center mb-5">
     <div class="col-md-6">
-        <canvas id="doughnutByCurrency" height="200"></canvas>
+        <canvas id="doughnutByCurrency" height="200" class="d-block mx-auto"></canvas>
     </div>
 </div>
 
 <hr />
 
-<!-- 5) Recurring Transactions Summary -->
 <h3>Recurring Transactions Overview</h3>
 <table class="table table-bordered mb-5">
     <thead class="table-light text-black">
@@ -87,12 +81,11 @@ ViewData["Title"] = "Statistics Dashboard";
     </tbody>
 </table>
 
-
 @section Scripts {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
     (function() {
+
         const rawMonthly = @Html.Raw(
         JsonSerializer.Serialize(
         Model.MonthlyStats,
@@ -115,7 +108,6 @@ ViewData["Title"] = "Statistics Dashboard";
 
         const datasetsBar = [];
         wallets.forEach(wname => {
-            // Income
             const incomeData = monthsArray.map(m => {
                 const [y, mo] = m.split("-");
                 const rec = rawMonthly.find(i =>
@@ -131,7 +123,7 @@ ViewData["Title"] = "Statistics Dashboard";
                 borderWidth: 1
             });
 
-            // Expense 
+            // Расходы
             const expenseData = monthsArray.map(m => {
                 const [y, mo] = m.split("-");
                 const rec = rawMonthly.find(i =>
@@ -179,7 +171,7 @@ ViewData["Title"] = "Statistics Dashboard";
                 }
             }
         });
-        
+
 
         const rawCurrentMonth = @Html.Raw(
         JsonSerializer.Serialize(
@@ -188,18 +180,18 @@ ViewData["Title"] = "Statistics Dashboard";
         )
         );
 
-        // Собираем метки (accountName) и data (TotalVolume)
-        const labelsDoughnut1 = rawCurrentMonth.map(i => i.accountName);
-        const dataDoughnut1   = rawCurrentMonth.map(i => i.totalVolume);
+        // Метки: accountName, данные: totalVolume
+        const labelsD1 = rawCurrentMonth.map(i => i.accountName);
+        const dataD1   = rawCurrentMonth.map(i => i.totalVolume);
 
         const ctxD1 = document.getElementById('doughnutThisMonth').getContext('2d');
         new Chart(ctxD1, {
             type: 'doughnut',
             data: {
-                labels: labelsDoughnut1,
+                labels: labelsD1,
                 datasets: [{
-                    data: dataDoughnut1,
-                    backgroundColor: labelsDoughnut1.map(_ => getRandomColor())
+                    data: dataD1,
+                    backgroundColor: labelsD1.map(_ => getRandomColor())
                 }]
             },
             options: {
@@ -221,7 +213,7 @@ ViewData["Title"] = "Statistics Dashboard";
             }
         });
 
-
+        
         const rawByCurrency = @Html.Raw(
         JsonSerializer.Serialize(
         Model.SumByCurrency,
@@ -229,18 +221,17 @@ ViewData["Title"] = "Statistics Dashboard";
         )
         );
 
-        // currency and data (TotalBalance)
-        const labelsDoughnut2 = rawByCurrency.map(i => i.currency);
-        const dataDoughnut2   = rawByCurrency.map(i => i.totalBalance);
+        const labelsD2 = rawByCurrency.map(i => i.currency);
+        const dataD2   = rawByCurrency.map(i => i.totalBalance);
 
         const ctxD2 = document.getElementById('doughnutByCurrency').getContext('2d');
         new Chart(ctxD2, {
             type: 'doughnut',
             data: {
-                labels: labelsDoughnut2,
+                labels: labelsD2,
                 datasets: [{
-                    data: dataDoughnut2,
-                    backgroundColor: labelsDoughnut2.map(_ => getRandomColor())
+                    data: dataD2,
+                    backgroundColor: labelsD2.map(_ => getRandomColor())
                 }]
             },
             options: {
@@ -261,7 +252,7 @@ ViewData["Title"] = "Statistics Dashboard";
                 }
             }
         });
-
+        
         function getRandomColor() {
             const r = Math.floor(Math.random() * 200);
             const g = Math.floor(Math.random() * 200);

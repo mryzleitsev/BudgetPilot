@@ -4,55 +4,90 @@
     ViewData["Title"] = "Welcome to BudgetPilot";
 }
 
-<section class="hero text-center py-5 bg-light">
+<!-- ========================================= -->
+<!--                Hero Section                -->
+<!-- ========================================= -->
+<section class="hero-section text-center py-5 bg-light">
     <div class="container">
-        <h1 class="display-4">Take Control of Your Money</h1>
+        <h1 class="display-4 fw-bold mb-3">Take Control of Your Money</h1>
         <p class="lead mb-4">
-            BudgetPilot is a simple, secure web platform to track your income, expenses
+            BudgetPilot is a simple, secure web platform to track your income, expenses,
             and visualize your financial health in real time.
         </p>
 
         @if (User.Identity?.IsAuthenticated ?? false)
         {
-            <a class="btn btn-primary btn-lg" asp-page="/Accounts/Index">Go to Dashboard</a>
+            <a class="btn btn-primary btn-lg me-2" asp-page="/Accounts/Index">Go to Dashboard</a>
+            <a class="btn btn-outline-secondary btn-lg" asp-page="/Transactions/Index">View Transactions</a>
+        }
+        else
+        {
+            <!-- Если пользователь не залогинен, предлагаем зарегистрироваться или войти -->
+            <a class="btn btn-primary btn-lg me-2" asp-page="/Account/Register">Sign Up</a>
+            <a class="btn btn-outline-secondary btn-lg" asp-page="/Account/Login">Login</a>
         }
     </div>
 </section>
 
-<section class="features py-5">
+<!-- ========================================= -->
+<!--               Features Section             -->
+<!-- ========================================= -->
+<section class="features-section py-5">
     <div class="container">
-        <div class="row text-center gx-4 gy-4">
+        <div class="row gx-4 gy-4 text-center">
             <div class="col-md-4">
-                <div class="p-4 border rounded">
-                    <div class="mb-3" style="font-size:3rem;">💰</div>
-                    <h3>Multiple Wallets</h3>
-                    <p>Create cash, card or e-wallet accounts and see all balances in one place.</p>
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <!-- Можно заменить на <i class="bi bi-wallet2" style="font-size:3rem;"></i>, если подключите Bootstrap Icons -->
+                        <div class="mb-3" style="font-size:3rem;">💰</div>
+                        <h5 class="card-title fw-bold">Multiple Wallets</h5>
+                        <p class="card-text">
+                            Create cash, card or e-wallet accounts and see all balances in one place.
+                        </p>
+                    </div>
                 </div>
             </div>
+
             <div class="col-md-4">
-                <div class="p-4 border rounded">
-                    <div class="mb-3" style="font-size:3rem;">📊</div>
-                    <h3>Smart Analytics</h3>
-                    <p>Visualize spending by category, track trends, export reports to PDF.</p>
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="mb-3" style="font-size:3rem;">📊</div>
+                        <h5 class="card-title fw-bold">Smart Analytics</h5>
+                        <p class="card-text">
+                            Visualize spending by category, track trends, export reports to PDF.
+                        </p>
+                    </div>
                 </div>
             </div>
+
             <div class="col-md-4">
-                <div class="p-4 border rounded">
-                    <div class="mb-3" style="font-size:3rem;">🛡️</div>
-                    <h3>Secure & Private</h3>
-                    <p>Your data stays yours—no third-party integrations, full SSL encryption.</p>
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="mb-3" style="font-size:3rem;">🛡️</div>
+                        <h5 class="card-title fw-bold">Secure &amp; Private</h5>
+                        <p class="card-text">
+                            Your data stays yours—no third-party integrations, full SSL encryption.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="cta text-center py-5 bg-primary text-white">
+<!-- ========================================= -->
+<!--             Call-to-Action Section          -->
+<!-- ========================================= -->
+<section class="cta-section text-center py-5 bg-primary text-white">
     <div class="container">
-        <h2 class="mb-3">Ready to pilot your budget?</h2>
+        <h2 class="fw-bold mb-3">Ready to pilot your budget?</h2>
         @if (User.Identity?.IsAuthenticated ?? false)
         {
             <a class="btn btn-light btn-lg" asp-page="/Transactions/Index">Manage Transactions</a>
+        }
+        else
+        {
+            <a class="btn btn-light btn-lg" asp-page="/Account/Register">Get Started Now</a>
         }
     </div>
 </section>
