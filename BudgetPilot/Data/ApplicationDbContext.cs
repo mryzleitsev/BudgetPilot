@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using BudgetPilot.Models;    
+using BudgetPilot.Models;
 
 namespace BudgetPilot.Data
 {
@@ -13,8 +13,10 @@ namespace BudgetPilot.Data
         
         public DbSet<Transaction> Transactions { get; set; } = default!;
         public DbSet<Account>     Accounts     { get; set; } = default!;
-        public DbSet<Category> Categories { get; set; } = default!;
-        
+        public DbSet<Category>    Categories   { get; set; } = default!;
+
+        public DbSet<RecurringTransaction> RecurringTransactions { get; set; } = default!;
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -27,7 +29,7 @@ namespace BudgetPilot.Data
             builder.Entity<Transaction>()
                 .Property(t => t.Amount)
                 .HasPrecision(18, 2);
-            
+
             builder.Entity<Transaction>()
                 .Property(t => t.CategoryId)
                 .HasDefaultValue(8);
@@ -42,6 +44,16 @@ namespace BudgetPilot.Data
                 new Category { Id = 7, Name = "Salary" },
                 new Category { Id = 8, Name = "Other" }
             );
+
+            builder.Entity<RecurringTransaction>()
+                .Property(r => r.Amount)
+                .HasPrecision(18, 2);
+
+            // by default flag IsActive = true
+            builder.Entity<RecurringTransaction>()
+                .Property(r => r.IsActive)
+                .HasDefaultValue(true);
+
         }
     }
 }

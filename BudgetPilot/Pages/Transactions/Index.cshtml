@@ -40,7 +40,7 @@
         </tr>
     </thead>
     <tbody>
-    @* Группируем транзакции по дате *@
+    @* Group transactions by date *@
     @foreach (var group in Model.Transactions.GroupBy(t => t.Date.Date))
     {
         <tr class="table-secondary">

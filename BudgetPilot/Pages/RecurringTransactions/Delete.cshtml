@@ -1,0 +1,42 @@
+﻿@page "{id:int}"
+@model BudgetPilot.Pages.RecurringTransactions.DeleteModel
+@{
+    ViewData["Title"] = "Delete Recurring Transaction";
+}
+
+<h1 class="mb-4">Delete Recurring Transaction</h1>
+<p>Are you sure you want to delete this recurring transaction?</p>
+
+<dl class="row">
+    <dt class="col-sm-2">Next Run Date</dt>
+    <dd class="col-sm-10">@Model.Recurring.NextRunDate.ToString("yyyy-MM-dd")</dd>
+
+    <dt class="col-sm-2">Amount</dt>
+    <dd class="col-sm-10">@Model.Recurring.Amount.ToString("N2")</dd>
+
+    <dt class="col-sm-2">Frequency</dt>
+    <dd class="col-sm-10">@Model.Recurring.Frequency</dd>
+
+    <dt class="col-sm-2">Category</dt>
+    <dd class="col-sm-10">@Model.Recurring.Category?.Name</dd>
+
+    <dt class="col-sm-2">Description</dt>
+    <dd class="col-sm-10">@Model.Recurring.Description</dd>
+
+    <dt class="col-sm-2">Account</dt>
+    <dd class="col-sm-10">@Model.Recurring.Account?.Name</dd>
+
+    <dt class="col-sm-2">Active</dt>
+    <dd class="col-sm-10">
+        @if (Model.Recurring.IsActive) {
+            <span class="badge bg-success">Yes</span>
+        } else {
+            <span class="badge bg-secondary">No</span>
+        }
+    </dd>
+</dl>
+
+<form method="post" asp-route-id="@Model.Recurring.Id">
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>

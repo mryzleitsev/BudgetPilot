@@ -1,0 +1,74 @@
+﻿@page "{accountId:int?}"
+@model BudgetPilot.Pages.RecurringTransactions.IndexModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Recurring Transactions";
+}
+
+<h1 class="mb-3">Recurring Transactions</h1>
+
+<form method="get" class="mb-4">
+    <label>Filter by account:</label>
+    <select name="accountId"
+            class="form-select w-auto d-inline-block me-2"
+            onchange="this.form.submit()">
+        <option value="">All accounts</option>
+        @foreach (var acct in Model.Accounts)
+        {
+            if (acct.Id == Model.SelectedAccountId)
+            {
+                <option value="@acct.Id" selected>@acct.Name</option>
+            }
+            else
+            {
+                <option value="@acct.Id">@acct.Name</option>
+            }
+        }
+    </select>
+
+    <a class="btn btn-primary float-end" asp-page="Create">+ New Recurring</a>
+</form>
+
+<table class="table">
+    <thead class="table-light text-dark">
+        <tr>
+            <th style="width: 12%;">Next Run</th>
+            <th style="width: 10%;">Amount</th>
+            <th style="width: 12%;">Frequency</th>
+            <th style="width: 18%;">Category</th>
+            <th>Description</th>
+            <th style="width: 12%;">Account</th>
+            <th style="width: 10%;">Active</th>
+        </tr>
+    </thead>
+    <tbody>
+    @if (!Model.RecurringList.Any())
+    {
+        <tr>
+            <td colspan="7" class="text-center">No recurring transactions found.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var rec in Model.RecurringList)
+        {
+            <tr style="cursor: pointer;"
+                onclick="location.href='@Url.Page("Edit", new { id = rec.Id })'">
+                <td>@rec.NextRunDate.ToString("yyyy-MM-dd")</td>
+                <td>@rec.Amount.ToString("N2")</td>
+                <td>@rec.Frequency</td>
+                <td>@rec.Category?.Name</td>
+                <td>@rec.Description</td>
+                <td>@rec.Account?.Name</td>
+                <td>
+                    @if (rec.IsActive) {
+                        <span class="badge bg-success">Yes</span>
+                    } else {
+                        <span class="badge bg-secondary">No</span>
+                    }
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
