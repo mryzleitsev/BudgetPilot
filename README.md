@@ -26,7 +26,6 @@ https://mryzleitsev.space/
 7. [Usage Examples](#usage-examples)  
 8. [Future Enhancements](#future-enhancements)  
 9. [Author](#author)  
-10. [License](#license)  
 
 ---
 
