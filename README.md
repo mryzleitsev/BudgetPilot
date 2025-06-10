@@ -26,7 +26,6 @@ https://mryzleitsev.space/
 7. [Usage Examples](#usage-examples)  
 8. [Future Enhancements](#future-enhancements)  
 9. [Author](#author)  
-10. [License](#license)  
 
 ---
 
@@ -315,9 +314,6 @@ BudgetPilot/
 
 ## Future Enhancements
 
-* **Automated Recurring Transaction Processor**
-  * A background service (hosted worker) that runs daily/weekly and auto-creates one-time `Transaction` records when `NextRunDate` is due, then updates `LastRunDate` and calculates the next `NextRunDate` based on `Frequency`.
-
 * **Export & Reporting**
   * PDF/CSV export of transaction history and charts.
   * Email reporting (send a weekly or monthly summary to the user).
@@ -348,7 +344,7 @@ Specialty: Computer Engineering (123)
 National Aerospace University "Kharkiv Aviation Institute" (NAU "KhAI")  
 ```
 
-* **Email:** [miron04y@gmail.com](mailto:miron04y@gmail.com)
+* **Email:** [m.r.ryzleytsev@student.csn.khai.edu](mailto:m.r.ryzleytsev@student.csn.khai.edu) or [myron.ryzleitsev@gmail.com](mailto:myron.ryzleitsev@gmail.com)
 * **Personal Website:** [https://mryzleitsev.space/](https://mryzleitsev.space/)
 
 ---
